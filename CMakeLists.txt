@@ -1,11 +1,7 @@
-cmake_minimum_required(VERSION 3.0.0)
-project(notebook VERSION 0.1.0)
+cmake_minimum_required(VERSION 3.16)
 
-include(CTest)
-enable_testing()
+project(notebook)
 
-add_executable(notebook main.cpp)
+file(GLOB SRC CONFIGURE_DEPENDS "src/*.cpp")
 
-set(CPACK_PROJECT_NAME ${PROJECT_NAME})
-set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
-include(CPack)
+add_executable(${PROJECT_NAME} ${SRC})

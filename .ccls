@@ -1,0 +1,2 @@
+g++
+%hpp %cpp -std=c++20
