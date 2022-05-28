@@ -9,7 +9,7 @@
 
 using namespace std;
 
-vector<string> names = {"Babin-Čaljkušić Ameli", "Bakota Ivona", "Bartulin Andrej", "Bezjak Viljem", "Bilić-Matišić Stjepan", "Bilić-Prcić Paula", "Jagoda"};
+vector<string> names = {"Test name", "New name"};
 vector<int> row = {};
 
 map<string, int> students = 
