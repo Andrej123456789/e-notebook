@@ -94,7 +94,7 @@ int main(int argc, const char **argv)
 				break;
 
 			case '+':
-				cout << "Enter new name: ";
+				cout << "Enter name: ";
 				cin >> name;
 				names.push_back(name);
 
