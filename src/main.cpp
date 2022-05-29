@@ -21,10 +21,13 @@ void Help()
 {
 	cout << "Help: \n";
 	cout << "a - show all students\n";
+	cout << "+ - add new name to 'names' list\n";
 };
 
 int init()
 {
+	row.clear();
+
 	sort(names.begin(), names.end());
 
 	for (int i = 1; i < size(names) + 1; i++)
@@ -59,6 +62,7 @@ int init()
 
 int main(int argc, const char **argv)
 {
+	string name;
 	char selection;
 
 	if (init() != 0)
@@ -77,23 +81,41 @@ int main(int argc, const char **argv)
 		selection = argv[1][0];
 	}
 
-	switch (selection)
+	while (selection != 'x')
 	{
-		case 'a':
-			for (auto& x : students)
-			{
-				cout << "Name: " << x.first << " | Order: " << x.second << "\n";
-			}
+		switch (selection)
+		{
+			case 'a':
+				for (auto& x : students)
+				{
+					cout << "Name: " << x.first << " | Order: " << x.second << "\n";
+				}
 
-			break;
+				break;
 
-		case 'h':
-			Help();
-			break;
+			case '+':
+				cout << "Enter new name: ";
+				cin >> name;
+				names.push_back(name);
 
-		default:
-			Help();
-			break;
+				init();
+
+				break;	
+
+			case 'h':
+				Help();
+				break;
+
+			case 'x':
+				break;
+
+			default:
+				Help();
+				break;
+		}
+
+		cout << "Choose an option: ";
+		cin >> selection;
 	}
 
 	return 0;
