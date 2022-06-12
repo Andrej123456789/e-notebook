@@ -7,6 +7,108 @@
 #include <boost/range/combine.hpp>
 #include <boost/tuple/tuple.hpp>
 
+#ifdef _WIN32
+	#include <Windows.h>
+
+	static BOOL WINAPI end(DWORD dwCtrlType)
+	{
+		int key;
+
+		switch (dwCtrlType)
+		{
+			case CTRL_C_EVENT: // Ctrl+C
+				std::cout << "\nPress any key to continue...\n";
+				key = std::cin.get();
+				if (key != 10)
+				{
+					/* we need to do something here; input is broken */
+					exit(0);
+				}
+				else
+				{
+					exit(0);
+				}
+				break;
+			case CTRL_BREAK_EVENT: // Ctrl+Break
+				break;
+			case CTRL_CLOSE_EVENT: // Closing the console window
+				break;
+			case CTRL_LOGOFF_EVENT: // User logs off. Passed only to services!
+				break;
+			case CTRL_SHUTDOWN_EVENT: // System is shutting down. Passed only to services!
+				break;
+		}
+
+		// Return TRUE if handled this message, further handler functions won't be called.
+		// Return FALSE to pass this message to further handlers until default handler calls ExitProcess().
+		return FALSE;
+	}
+#elif _WIN64
+	#include <Windows.h>
+
+	static BOOL WINAPI end(DWORD dwCtrlType)
+	{
+		int key;
+
+		switch (dwCtrlType)
+		{
+			case CTRL_C_EVENT: // Ctrl+C
+				std::cout << "\nPress any key to continue...\n";
+				key = std::cin.get();
+				if (key != 10)
+				{
+					/* we need to do something here; input is broken */
+					exit(0);
+				}
+				else
+				{
+					exit(0);
+				}
+				break;
+			case CTRL_BREAK_EVENT: // Ctrl+Break
+				break;
+			case CTRL_CLOSE_EVENT: // Closing the console window
+				break;
+			case CTRL_LOGOFF_EVENT: // User logs off. Passed only to services!
+				break;
+			case CTRL_SHUTDOWN_EVENT: // System is shutting down. Passed only to services!
+				break;
+		}
+
+		// Return TRUE if handled this message, further handler functions won't be called.
+		// Return FALSE to pass this message to further handlers until default handler calls ExitProcess().
+		return FALSE;
+	}
+#elif __APPLE__ || __MACH__
+	#include <signal.h>
+	struct sigaction sigIntHandler;
+#elif __linux__
+	#include <signal.h>
+	struct sigaction sigIntHandler;
+
+	void end(int sig)
+	{
+		std::cout << "\nPress any key to continue...\n";
+		auto key = std::cin.get();
+		if (key != 10)
+		{
+			/* we need to do something here; input is broken */
+			exit(0);
+		}
+		else
+		{
+			exit(sig);
+		}
+	}
+#elif __FreeBSD__
+	#include <signal.h>
+	struct sigaction sigIntHandler;
+#elif __unix || __unix__
+	#pragma message ("Unsupported!")
+#else
+	#pragma message ("Unsupported!")
+#endif
+
 using namespace std;
 
 vector<string> names = {"Test", "New"};
@@ -64,6 +166,31 @@ int main(int argc, const char **argv)
 {
 	string name;
 	char selection;
+
+	#ifdef _WIN32
+		SetConsoleCtrlHandler(end, TRUE);
+	#elif _WIN64
+		SetConsoleCtrlHandler(end, TRUE);
+	#elif __APPLE__ || __MACH__
+		sigIntHandler.sa_handler = end;
+		sigemptyset(&sigIntHandler.sa_mask);
+		sigIntHandler.sa_flags = 0;
+		sigaction(SIGINT, &sigIntHandler, NULL);
+	#elif __linux__
+		sigIntHandler.sa_handler = end;
+		sigemptyset(&sigIntHandler.sa_mask);
+		sigIntHandler.sa_flags = 0;
+		sigaction(SIGINT, &sigIntHandler, NULL);
+	#elif __FreeBSD__
+		sigIntHandler.sa_handler = end;
+		sigemptyset(&sigIntHandler.sa_mask);
+		sigIntHandler.sa_flags = 0;
+		sigaction(SIGINT, &sigIntHandler, NULL);
+	#elif __unix || __unix__
+		#pragma message ("Unsupported!")
+	#else
+		#pragma message ("Unsupported!")
+	#endif
 
 	if (init() != 0)
 	{
