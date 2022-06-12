@@ -9,7 +9,7 @@
 
 using namespace std;
 
-vector<string> names = {"Test name", "New name"};
+vector<string> names = {"Test", "New"};
 vector<int> row = {};
 
 map<string, int> students = 
@@ -30,7 +30,7 @@ int init()
 
 	sort(names.begin(), names.end());
 
-	for (int i = 1; i < size(names) + 1; i++)
+	for (size_t i = 1; i < names.size() + 1; i++)
 	{
 		row.push_back(i);
 	}
@@ -97,10 +97,27 @@ int main(int argc, const char **argv)
 				cout << "Enter name: ";
 				cin >> name;
 				names.push_back(name);
+				name = " ";
 
 				init();
+				break;
 
-				break;	
+			case '-':
+				cout << "Enter name to remove: ";
+				cin >> name;
+
+				for (auto i = names.begin(); i != names.end(); ++i)
+				{
+					if (*i == name)
+					{
+						names.erase(i);
+						i--;
+					}
+				}
+
+				students.clear();
+				init();
+				break;
 
 			case 'h':
 				Help();
