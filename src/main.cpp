@@ -13,7 +13,7 @@
 	static BOOL WINAPI end(DWORD dwCtrlType)
 	{
 		int key;
-
+	
 		switch (dwCtrlType)
 		{
 			case CTRL_C_EVENT: // Ctrl+C
@@ -124,6 +124,7 @@ void Help()
 	cout << "Help: \n";
 	cout << "a - show all students\n";
 	cout << "+ - add new name to 'names' list\n";
+	cout << "s - save information about student to file\n";
 };
 
 int init()
@@ -166,6 +167,8 @@ int main(int argc, const char **argv)
 {
 	string name;
 	char selection;
+
+	bool wasFound = false;
 
 	#ifdef _WIN32
 		SetConsoleCtrlHandler(end, TRUE);
@@ -245,6 +248,36 @@ int main(int argc, const char **argv)
 				students.clear();
 				init();
 				break;
+
+			case 's':
+				cout << "Enter name: ";
+				cin >> name;
+
+				for (auto& x : students)
+				{
+					if (x.first == name)
+					{
+						string new_name = name += ".txt";
+						FILE* student_file = fopen(new_name.c_str(), "w");
+						fprintf(student_file, "Name: %s | Order: %d", name.c_str(), x.second);
+						fclose(student_file);
+						wasFound = true;
+						goto end;
+					}
+
+					else
+					{
+						wasFound = false;
+					}
+				}
+
+				if (wasFound == false)
+				{
+					cout << "Name wasn't found!\n";
+				}
+
+				end:
+					break;
 
 			case 'h':
 				Help();
