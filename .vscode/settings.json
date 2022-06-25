@@ -9,6 +9,7 @@
         "optional": "cpp",
         "string": "cpp",
         "iostream": "cpp",
-        "iosfwd": "cpp"
+        "iosfwd": "cpp",
+        "typeinfo": "cpp"
     }
 }

@@ -1,11 +1,15 @@
 #include <iostream>
 #include <string>
+#include <fstream>
+#include <sstream>
 
 #include <map>
 #include <vector>
 
 #include <boost/range/combine.hpp>
 #include <boost/tuple/tuple.hpp>
+
+using namespace std;
 
 #ifdef _WIN32
 	#include <Windows.h>
@@ -119,13 +123,12 @@ map<string, int> students =
 
 };
 
-void Help()
+/* Check if some string start with some std::string value */
+static bool isStarting (std::string const &fullString, std::string const &starting) 
 {
-	cout << "Help: \n";
-	cout << "a - show all students\n";
-	cout << "+ - add new name to 'names' list\n";
-	cout << "s - save information about student to file\n";
-};
+    if (fullString.length() <= starting.length()) { return true; }
+    else { return false; }
+}
 
 int init()
 {
@@ -163,9 +166,75 @@ int init()
 	}
 };
 
+void Add(string name)
+{
+	names.push_back(name);
+	init();
+}
+
+void Remove(string name)
+{
+	for (auto i = names.begin(); i != names.end(); ++i)
+	{
+		if (*i == name)
+		{
+			names.erase(i);
+			i--;
+		}
+	}
+
+	students.clear();
+	init();
+}
+
+void Open()
+{
+	string path, name, temp;
+	int order;
+
+	cout << "Enter name: ";
+	cin >> name;
+
+	path = name += ".txt";
+
+	fstream my_file;
+	my_file.open(path);
+
+	Remove(name);
+
+	if (my_file.is_open())
+	{
+		bool result;
+		while (getline(my_file, temp))
+		{
+			result = isStarting(temp, "Order");
+			if (result == true)
+			{
+				Add(temp);
+			}
+		}
+
+		init();
+		my_file.close();
+	}
+	else
+	{
+		cout << "Unable to open file!\n";
+		return;
+	}
+}
+
+void Help()
+{
+	cout << "Help: \n";
+	cout << "a - show all students\n";
+	cout << "+ - add new name to 'names' list\n";
+	cout << "s - save information about student to file\n";
+};
+
 int main(int argc, const char **argv)
 {
-	string name;
+	string temp_name;
 	char selection;
 
 	bool wasFound = false;
@@ -194,6 +263,11 @@ int main(int argc, const char **argv)
 	#else
 		#pragma message ("Unsupported!")
 	#endif
+
+	cout << "e-notebook v0.5\n";
+	char cwd[PATH_MAX];
+    getcwd(cwd, sizeof(cwd));
+	cout << "Current path: " << cwd << "\n";
 
 	if (init() != 0)
 	{
@@ -225,41 +299,30 @@ int main(int argc, const char **argv)
 
 			case '+':
 				cout << "Enter name: ";
-				cin >> name;
-				names.push_back(name);
-				name = " ";
-
-				init();
+				cin >> temp_name;
+				Add(temp_name);
+				temp_name.clear();
 				break;
 
 			case '-':
 				cout << "Enter name to remove: ";
-				cin >> name;
-
-				for (auto i = names.begin(); i != names.end(); ++i)
-				{
-					if (*i == name)
-					{
-						names.erase(i);
-						i--;
-					}
-				}
-
-				students.clear();
-				init();
+				cin >> temp_name;
+				Remove(temp_name);
+				temp_name.clear();
 				break;
 
 			case 's':
 				cout << "Enter name: ";
-				cin >> name;
+				cin >> temp_name;
 
 				for (auto& x : students)
 				{
-					if (x.first == name)
+					if (x.first == temp_name)
 					{
-						string new_name = name += ".txt";
+						string new_name = temp_name += ".txt";
 						FILE* student_file = fopen(new_name.c_str(), "w");
-						fprintf(student_file, "Name: %s | Order: %d", name.c_str(), x.second);
+						fprintf(student_file, "Name %s\n", temp_name.c_str());
+						fprintf(student_file, "Order %d\n", x.second);
 						fclose(student_file);
 						wasFound = true;
 						goto end;
@@ -277,7 +340,12 @@ int main(int argc, const char **argv)
 				}
 
 				end:
+					temp_name.clear();
 					break;
+
+			case 'o':
+				Open();
+				break;
 
 			case 'h':
 				Help();
